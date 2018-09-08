@@ -68,14 +68,11 @@ class Torre_Babel:
     def t3(self,x,y):
         tb=None
         m=self.copia()
-        if x != 0:
-            t=m[y][x]
-            m[y][x]=m[y][x-1]
-            m[y][x-1]=t
-        else:
-            t=m[y][x]
-            m[y][x]=m[y][len(self.estado_actual[y])-1]
-            m[y][len(self.estado_actual[y])-1]=t
+    
+        t=m[y][0]
+        del m[y][0]
+        m[y].append(t)
+
         tb=Torre_Babel()
         tb.agregar_estado_actual(m,self.casilla)
         return tb
@@ -83,15 +80,11 @@ class Torre_Babel:
     def t4(self,x,y):
         tb=None
         m=self.copia()
-        if x != (len(self.estado_actual[y])-1):
-            t=m[y][x]
-            m[y][x]=m[y][x+1]
-            m[y][x+1]=t
-        else:
-            t=m[y][x]
-            m[y][x]=m[y][0]
-            m[y][0]=t
-            
+
+        t=m[y][len(m[y])-1]
+        del m[y][len(m[y])-1]
+        m[y].insert(0,t)  
+
         tb=Torre_Babel()
         tb.agregar_estado_actual(m,self.casilla)
         return tb
@@ -196,7 +189,12 @@ class Torre_Babel:
         self.estado_actual=inicio
         Torre_Babel.inicio=inicio
         Torre_Babel.fin=fin
-        #self.calcular_heuristica()
-        self.solucionar()
+        print(self.estado_actual)
+        print(self.casilla_vacia())
+        print(self.t2(1,0).estado_actual)
+        print(self.t3(1,0).estado_actual)
+        print(self.t4(1,0).estado_actual)
+        #self.t1()
+        #self.solucionar()
 
 
