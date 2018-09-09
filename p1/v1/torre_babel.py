@@ -13,6 +13,7 @@ class Torre_Babel:
         self.casilla=-1
         self.sub_estados=[]
         self.valor_heuristico=0
+        self.valor_costo=0
         self.ruta=[]
 
     def es_fin(self):
@@ -91,9 +92,8 @@ class Torre_Babel:
     
     def es_igual(self,m1,m2):
         for i in range(len(m1)):
-            for j in range(len(m1[i])):
-                if m1[i][j] != m2[i][j]:
-                    return False
+            if m1[i] != m2[i]:
+                return False
         return True
     
     def no_esta(self,tb):
@@ -101,6 +101,9 @@ class Torre_Babel:
             return False
         else:
             for i in Torre_Babel.cerrados:
+                if self.es_igual(tb.estado_actual,i.estado_actual):
+                    return False
+            for i in Torre_Babel.abiertos:
                 if self.es_igual(tb.estado_actual,i.estado_actual):
                     return False
             return True
@@ -119,68 +122,71 @@ class Torre_Babel:
                 if Torre_Babel.fin[i][j] != -1:
                     valores_final[Torre_Babel.fin[i][j]-1].append([i,j])
         subtotal=[]
+        
         for i in range(len(self.estado_actual[i])):
             
-            subtotal.append([])
+            subtotal.append(0)
             for j in valores_actual[i]:
-                total=0
+                r=0
                 for k in valores_final[i]:
-                    total=total+(abs(j[0]-k[0])+abs(j[1]-k[1]))
-                subtotal[i].append(total/len(j))
-        resultado=[]
-        for i in subtotal:
-            t=0
-            for j in i:
-                t=t+j
-            resultado.append(t/len(i))
-        s=0
-        for i in resultado:
-            s=s+i
+                    r=r+(abs(j[0]-k[0])+abs(j[1]-k[1]))
+                subtotal[i]=subtotal[i]+(r/len(j))
         
-        self.valor_heuristico=s/len(resultado)
+        total=(sum(subtotal)/len(subtotal))
+        self.valor_heuristico=total
     
     def A_estrella(self):
 
-        for i in range(50):
-        #while not self.es_fin():
+        #for w in range(100):
+        while not self.es_fin():
             x,y=self.casilla_vacia()
             tb1=self.t1(x,y)
             tb2=self.t2(x,y)
             tb3=self.t3(x,y)
             tb4=self.t4(x,y)
+            estados=[]
             if self.no_esta(tb1):
-                self.sub_estados.append(tb1)
+                estados.append(tb1)
+                tb1.valor_costo=self.valor_costo+1
             if self.no_esta(tb2):
-                self.sub_estados.append(tb2)
+                estados.append(tb2)
+                tb2.valor_costo=self.valor_costo+1
             if self.no_esta(tb3):
-                self.sub_estados.append(tb3)
+                estados.append(tb3)
+                tb3.valor_costo=self.valor_costo+1
             if self.no_esta(tb4):
-                self.sub_estados.append(tb4)
+                estados.append(tb4)
+                tb4.valor_costo=self.valor_costo+1
 
-            for i in self.sub_estados:
+            for i in estados:
                 i.calcular_heuristica()
                 i.ruta=self.ruta[:]
                 i.ruta.append(copy.deepcopy(self))
                 Torre_Babel.abiertos.append(i)
-          
-            
+            del estados
             temp=Torre_Babel.abiertos[0]
             for i in Torre_Babel.abiertos:
-                if i.valor_heuristico < temp.valor_heuristico:
+                if i.valor_costo+i.valor_heuristico < temp.valor_costo+temp.valor_heuristico:
                     temp=i
 
             Torre_Babel.abiertos.remove(temp)
+            print("Ruta "+str(1))
+            for a in temp.ruta:
+                print(a.estado_actual)
+                #print(a.valor_costo)
             self.estado_actual=temp.estado_actual
             self.casilla=temp.casilla
             self.sub_estados=[]
             self.valor_heuristico=temp.valor_heuristico
             self.ruta=temp.ruta[:]
+            self.valor_costo=temp.valor_costo
             Torre_Babel.cerrados.append(temp)
 
 
         print("*************   Ruta   *************")
         for i in self.ruta:
             print(i.estado_actual)
+        print(self.estado_actual)
         
     def solucionar(self):
         self.A_estrella()
@@ -189,12 +195,4 @@ class Torre_Babel:
         self.estado_actual=inicio
         Torre_Babel.inicio=inicio
         Torre_Babel.fin=fin
-        print(self.estado_actual)
-        print(self.casilla_vacia())
-        print(self.t2(1,0).estado_actual)
-        print(self.t3(1,0).estado_actual)
-        print(self.t4(1,0).estado_actual)
-        #self.t1()
-        #self.solucionar()
-
-
+        self.solucionar()
