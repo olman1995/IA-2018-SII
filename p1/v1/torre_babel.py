@@ -111,7 +111,7 @@ class Torre_Babel:
     def calcular_heuristica(self):
         valores_actual=[]
         valores_final=[]
-        for i in range(len(self.estado_actual)):
+        for i in range(len(self.estado_actual[1])):
             valores_actual.append([])
             valores_final.append([])
     
