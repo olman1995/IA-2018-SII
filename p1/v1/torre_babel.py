@@ -1,144 +1,136 @@
 import copy
 
 class Torre_Babel:
-    cerrados=[]
-    abiertos=[]
-    inicio=[]
-    fin=[]
-    final=False
     
-    def __init__(self):
-
-        self.estado_actual=[]
-        self.casilla=-1
-        self.sub_estados=[]
-        self.valor_heuristico=0
-        self.valor_costo=0
-        self.ruta=[]
-
-    def es_fin(self):
-        for i in range(len(self.estado_actual)):
-            for j in range(len(self.estado_actual[i])):
-                if Torre_Babel.fin[i][j] != self.estado_actual[i][j]:
-                    Torre_Babel.final=False
-                    return False
-        Torre_Babel.final=True
-        return True
-
-    def agregar_estado_actual(self,estado_actual,casilla):
-        self.estado_actual=estado_actual
-        self.casilla=casilla
+    def __init__(self):    
+        self.cerrados=[]
+        self.abiertos=[]
+        self.inicio=[]
+        self.fin=[]
+        self.estado_actual={"casilla":-1,"estado":[],"heuristico":0,"costo":0,"ruta":[]}
         
-    def copia(self):
-        copia=[]
-        for i in range(len(self.estado_actual)):
-            copia.append([])
-            for j in self.estado_actual[i]:
-                copia[i].append(j)
-        return copia
-
-    def casilla_vacia(self):
-        for i in range(len(self.estado_actual)):
-            for j in range(len(self.estado_actual[i])):
-                if self.estado_actual[i][j] == -1:
-                    return j,i
-        return -1,-1
-    
-    def t1(self,x,y):
-        tb=None
-        if(y!=0):
-            m=self.copia()
-            t=m[y][x]
-            m[y][x]=m[y-1][x]
-            m[y-1][x]=t
-            tb=Torre_Babel()
-            tb.agregar_estado_actual(m,self.casilla)
-        return tb
-    
-    def t2(self,x,y):
-        tb=None
-        if y != (len(self.estado_actual)-1):
-            m=self.copia()
-            t=m[y][x]
-            m[y][x]=m[y+1][x]
-            m[y+1][x]=t
-            tb=Torre_Babel()
-            tb.agregar_estado_actual(m,self.casilla)
-        return tb
-    
-    def t3(self,x,y):
-        tb=None
-        m=self.copia()
-    
-        t=m[y][0]
-        del m[y][0]
-        m[y].append(t)
-
-        tb=Torre_Babel()
-        tb.agregar_estado_actual(m,self.casilla)
-        return tb
-    
-    def t4(self,x,y):
-        tb=None
-        m=self.copia()
-
-        t=m[y][len(m[y])-1]
-        del m[y][len(m[y])-1]
-        m[y].insert(0,t)  
-
-        tb=Torre_Babel()
-        tb.agregar_estado_actual(m,self.casilla)
-        return tb
-    
     def es_igual(self,m1,m2):
         for i in range(len(m1)):
             if m1[i] != m2[i]:
                 return False
         return True
+        
+    def copia(self):
+        copia=[]
+        for i in range(len(self.estado_actual.get("estado"))):
+            copia.append([])
+            for j in self.estado_actual["estado"][i]:
+                copia[i].append(j)
+        return copia
+
+    def casilla_vacia(self):
+        for i in range(len(self.estado_actual.get("estado"))):
+            for j in range(len(self.estado_actual.get("estado")[i])):
+                if self.estado_actual.get("estado")[i][j] == -1:
+                    return j,i
+        return -1,-1
+
+    def buscar(self,m,n):
+        for i in range(len(m)):
+            for j in range(len(m[i])):
+                if m[i][j] == n:
+                    return j,i
+        return -1,-1
+    
+    def t1(self,x,y):
+        sub_estado=None
+        if(y!=0):
+            m=self.copia()
+            t=m[y][x]
+            m[y][x]=m[y-1][x]
+            m[y-1][x]=t
+            sub_estado= {"casilla":self.estado_actual.get("casilla"),
+                    "estado":m,
+                    "heuristico":0,
+                    "costo":0,
+                    "ruta":[]}
+        return sub_estado
+    
+    def t2(self,x,y):
+        sub_estado=None
+        if y != (len(self.estado_actual["estado"])-1):
+            m=self.copia()
+            t=m[y][x]
+            m[y][x]=m[y+1][x]
+            m[y+1][x]=t
+            sub_estado= {"casilla":self.estado_actual.get("casilla"),
+                    "estado":m,
+                    "heuristico":0,
+                    "costo":0,
+                    "ruta":[]}
+        return sub_estado
+
+    def t3(self,x,y):
+        sub_estado=None
+        m=self.copia()
+        t=m[y][0]
+        del m[y][0]
+        m[y].append(t)
+        sub_estado= {"casilla":self.estado_actual.get("casilla"),
+                    "estado":m,
+                    "heuristico":0,
+                    "costo":0,
+                    "ruta":[]}
+        return sub_estado
+
+    def t4(self,x,y):
+        sub_estado=None
+        m=self.copia()
+        t=m[y][len(m[y])-1]
+        del m[y][len(m[y])-1]
+        m[y].insert(0,t)  
+        sub_estado= {"casilla":self.estado_actual.get("casilla"),
+                    "estado":m,
+                    "heuristico":0,
+                    "costo":0,
+                    "ruta":[]}
+        return sub_estado
     
     def no_esta(self,tb):
         if tb==None:
             return False
         else:
-            for i in Torre_Babel.cerrados:
-                if self.es_igual(tb.estado_actual,i.estado_actual):
+            for i in self.cerrados:
+                if self.es_igual(tb.get("estado"),i.get("estado")):
                     return False
-            for i in Torre_Babel.abiertos:
-                if self.es_igual(tb.estado_actual,i.estado_actual):
+            for i in self.abiertos:
+                if self.es_igual(tb.get("estado"),i.get("estado")):
                     return False
             return True
 
-    def calcular_heuristica(self):
+    def calcular_heuristica(self,estado):
         valores_actual=[]
         valores_final=[]
-        for i in range(len(self.estado_actual[1])):
+        for i in range(len(estado[1])):
             valores_actual.append([])
             valores_final.append([])
-    
-        for i in range(len(self.estado_actual)):
-            for j in range(len(self.estado_actual[i])):
-                if self.estado_actual[i][j] != -1:
-                    valores_actual[self.estado_actual[i][j]-1].append([i,j])
-                if Torre_Babel.fin[i][j] != -1:
-                    valores_final[Torre_Babel.fin[i][j]-1].append([i,j])
+        for i in range(len(estado)):
+            for j in range(len(estado[i])):
+                if estado[i][j] != -1:
+                    valores_actual[estado[i][j]-1].append([i,j])
+                if self.fin[i][j] != -1:
+                    valores_final[self.fin[i][j]-1].append([i,j])
         subtotal=[]
-        
-        for i in range(len(self.estado_actual[i])):
-            
+        for i in range(len(estado[i])):
             subtotal.append(0)
             for j in valores_actual[i]:
                 r=0
                 for k in valores_final[i]:
                     r=r+(abs(j[0]-k[0])+abs(j[1]-k[1]))
                 subtotal[i]=subtotal[i]+(r/len(j))
-        
+        del valores_actual
+        del valores_final
         total=(sum(subtotal)/len(subtotal))
-        self.valor_heuristico=total
+        return total
     
     def A_estrella(self):
-
         #for w in range(100):
-        while not self.es_fin():
+        while not self.es_igual(self.estado_actual.get("estado"),self.fin):
             x,y=self.casilla_vacia()
             tb1=self.t1(x,y)
             tb2=self.t2(x,y)
@@ -147,52 +139,88 @@ class Torre_Babel:
             estados=[]
             if self.no_esta(tb1):
                 estados.append(tb1)
-                tb1.valor_costo=self.valor_costo+1
+                tb1["costo"]=self.estado_actual.get("costo")+1
             if self.no_esta(tb2):
                 estados.append(tb2)
-                tb2.valor_costo=self.valor_costo+1
+                tb2["costo"]=self.estado_actual.get("costo")+1
             if self.no_esta(tb3):
                 estados.append(tb3)
-                tb3.valor_costo=self.valor_costo+1
+                tb3["costo"]=self.estado_actual.get("costo")+1
             if self.no_esta(tb4):
                 estados.append(tb4)
-                tb4.valor_costo=self.valor_costo+1
+                tb4["costo"]=self.estado_actual.get("costo")+1
 
             for i in estados:
-                i.calcular_heuristica()
-                i.ruta=self.ruta[:]
-                i.ruta.append(copy.deepcopy(self))
-                Torre_Babel.abiertos.append(i)
+                h=self.calcular_heuristica(i.get("estado"))
+                i["heuristico"]=h
+                i["ruta"]=self.estado_actual.get("ruta")[:]
+                i["ruta"].append(copy.deepcopy(self.estado_actual))
+                self.abiertos.append(i)
             del estados
-            temp=Torre_Babel.abiertos[0]
-            for i in Torre_Babel.abiertos:
-                if i.valor_costo+i.valor_heuristico < temp.valor_costo+temp.valor_heuristico:
+            temp=self.abiertos[0]
+            for i in self.abiertos:
+                if i.get("costo")+i.get("heuristico") < temp.get("costo")+temp.get("heuristico"):
                     temp=i
-
-            Torre_Babel.abiertos.remove(temp)
-            print("Ruta "+str(1))
-            for a in temp.ruta:
-                print(a.estado_actual)
-                #print(a.valor_costo)
-            self.estado_actual=temp.estado_actual
-            self.casilla=temp.casilla
-            self.sub_estados=[]
-            self.valor_heuristico=temp.valor_heuristico
-            self.ruta=temp.ruta[:]
-            self.valor_costo=temp.valor_costo
-            Torre_Babel.cerrados.append(temp)
-
-
-        print("*************   Ruta   *************")
-        for i in self.ruta:
-            print(i.estado_actual)
-        print(self.estado_actual)
+            self.abiertos.remove(temp)
+            self.estado_actual["estado"]=temp["estado"]
+            self.estado_actual["casilla"]=temp["casilla"]
+            self.estado_actual["heuristico"]=temp["heuristico"]
+            self.estado_actual["ruta"]=temp["ruta"][:]
+            self.estado_actual["costo"]=temp["costo"]
+            self.cerrados.append(temp)
+        self.estado_actual["ruta"].append(self.estado_actual)
+        return self.estado_actual["ruta"]
         
     def solucionar(self):
-        self.A_estrella()
+        p=[]
+        self.inicio
+        x,y=self.buscar(self.inicio,self.fin[0][0])
+        if x==0 and y==0:
+            print("hola")
+        else:
+            p.append({"casilla":-1,"estado":self.copia(),"heuristico":0,"costo":0,"ruta":[]})
+            i=self.copia()
+            f=self.copia()
+            c=i[0][0]
+            i[0][0]=-1
+            f[0][0]=-1
+            z=i[0][1]
+            i[0][1]=i[y][x]
+            i[y][x]=z
+            tb=Torre_Babel()
+            p+=tb.resolver(f,i,c)
+            es=copy.deepcopy(p[len(p)-1])
+            es["ruta"]=[]
+            es["estado"][0][0]=es["casilla"]
+            es["casilla"]=-1
+            p.append(es)
+            self.estado_actual=es
+            s=self.t3(0,0)
+            p.append(copy.deepcopy(s))                    
+            s["casilla"]=s["estado"][0][0]
+            s["estado"][0][0]=-1
+            p.append(s)
+            self.estado_actual=copy.deepcopy(s)
+        self.fin[0][0]=-1
+
+        p+=self.A_estrella()
+        es=copy.deepcopy(p[len(p)-1])
+        for i in p:
+            print(i.get("estado"))
+        es["estado"][0][0]=es["casilla"]
+        es["casilla"]=-1
+        p.append(es)
+        return p
+
+    def resolver(self,inicio,fin,casilla):
+        self.estado_actual["estado"]=inicio
+        self.estado_actual["casilla"]=casilla
+        self.inicio=inicio
+        self.fin=fin
+        return self.A_estrella()
 
     def iniciar(self,inicio,fin):
-        self.estado_actual=inicio
-        Torre_Babel.inicio=inicio
-        Torre_Babel.fin=fin
-        self.solucionar()
+        self.estado_actual["estado"]=inicio
+        self.inicio=inicio
+        self.fin=fin
+        return self.solucionar()
