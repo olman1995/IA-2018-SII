@@ -2,7 +2,7 @@ from torre_babel import Torre_Babel
 from tkinter import *
 class GUI:
     def __init__(self):
-        self.inicio={"casilla":-1,"estado":[[2,2,3],[1,1,3],[1,2,3]],"heuristico":0,"costo":0,"ruta":[]}
+        self.inicio={"casilla":-1,"estado":[[1,2,3],[2,1,3],[1,2,3]],"heuristico":0,"costo":0,"ruta":[]}
         self.fin={"casilla":-1,"estado":[[1,2,3],[1,2,3],[1,2,3]],"heuristico":0,"costo":0,"ruta":[]}
         self.ruta=[]
         self.tb=Torre_Babel()

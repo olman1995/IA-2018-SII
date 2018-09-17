@@ -172,13 +172,19 @@ class Torre_Babel:
         return self.estado_actual["ruta"]
         
     def solucionar(self):
-        p=[]
+        pasos=[]
         self.inicio
         x,y=self.buscar(self.inicio,self.fin[0][0])
         if x==0 and y==0:
-            print("hola")
+            pasos.append({"casilla":-1,"estado":self.copia(),"heuristico":0,"costo":0,"ruta":[]})
+            matriz=self.copia()
+            casilla=matriz[0][0]
+            matriz[0][0]=-1
+            estado={"casilla":casilla,"estado":matriz,"heuristico":0,"costo":0,"ruta":[]}
+            pasos.append(estado)
+            self.estado_actual=copy.deepcopy(estado)
         else:
-            p.append({"casilla":-1,"estado":self.copia(),"heuristico":0,"costo":0,"ruta":[]})
+            pasos.append({"casilla":-1,"estado":self.copia(),"heuristico":0,"costo":0,"ruta":[]})
             i=self.copia()
             f=self.copia()
             c=i[0][0]
@@ -188,29 +194,27 @@ class Torre_Babel:
             i[0][1]=i[y][x]
             i[y][x]=z
             tb=Torre_Babel()
-            p+=tb.resolver(f,i,c)
-            es=copy.deepcopy(p[len(p)-1])
+            pasos+=tb.resolver(f,i,c)
+            es=copy.deepcopy(pasos[len(pasos)-1])
             es["ruta"]=[]
             es["estado"][0][0]=es["casilla"]
             es["casilla"]=-1
-            p.append(es)
+            pasos.append(es)
             self.estado_actual=es
             s=self.t3(0,0)
-            p.append(copy.deepcopy(s))                    
+            pasos.append(copy.deepcopy(s))                    
             s["casilla"]=s["estado"][0][0]
             s["estado"][0][0]=-1
-            p.append(s)
+            pasos.append(s)
             self.estado_actual=copy.deepcopy(s)
-        self.fin[0][0]=-1
 
-        p+=self.A_estrella()
-        es=copy.deepcopy(p[len(p)-1])
-        for i in p:
-            print(i.get("estado"))
+        self.fin[0][0]=-1
+        pasos+=self.A_estrella()
+        es=copy.deepcopy(pasos[len(pasos)-1])
         es["estado"][0][0]=es["casilla"]
         es["casilla"]=-1
-        p.append(es)
-        return p
+        pasos.append(es)
+        return pasos
 
     def resolver(self,inicio,fin,casilla):
         self.estado_actual["estado"]=inicio
