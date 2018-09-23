@@ -1,11 +1,13 @@
 from torre_babel import Torre_Babel
 from tkinter import *
+import copy
+
 class GUI:
     def __init__(self):
         self.inicio={"casilla":-1,"estado":[[1,2,3],[2,1,3],[1,2,3]],"heuristico":0,"costo":0,"ruta":[]}
         self.fin={"casilla":-1,"estado":[[1,2,3],[1,2,3],[1,2,3]],"heuristico":0,"costo":0,"ruta":[]}
         self.ruta=[]
-        self.tb=Torre_Babel()
+        self.tb=None
         self.window = Tk()
         self.color_1="#000000"
         self.color_2="#222222"
@@ -24,17 +26,108 @@ class GUI:
         self.label.place(x=0, y=0,width=800,height=50)
         
         self.frame_init = Frame(self.window)
-        self.frame_init.config(bg=self.color_4,highlightbackground=self.color_1,relief=GROOVE, bd=2)
-        self.frame_init.place( width=250, height=250,x=100, y=75)
+        self.crear_init()
+
+        self.frame_final = Frame(self.window,bd=1)
+        self.crear_final()
+
+        self.frame_step = Frame(self.window)
+        self.crear_step()
+        
+        self.frame_steps = Frame(self.window)
+        self.crear_steps()
+
+        self.b_crear = Button(self.frame_main, text="Crear", command=self.crear)
+        self.b_crear.config(bg=self.color_6,bd=0,fg=self.color_4)
+        self.b_crear.place(x=700, y=2, width=98, height=46)
+
+        self.l_x = Label(self.frame_main, text="X:")
+        self.l_x.config(bg=self.color_2,fg=self.color_4,font=("Helvetica", 20),anchor=W,justify=LEFT)
+        self.l_x.place(x=500, y=2,width=46,height=46)
+
+        self.e_x = Entry(self.frame_main)
+        self.e_x.config(bg=self.color_4,fg=self.color_1,font=("Helvetica", 20))
+        self.e_x.place(x=550, y=6,width=38,height=38)
+
+        self.l_y = Label(self.frame_main, text="Y:")
+        self.l_y.config(bg=self.color_2,fg=self.color_4,font=("Helvetica", 20),anchor=W,justify=LEFT)
+        self.l_y.place(x=600, y=6,width=38,height=38)
+
+        self.e_y = Entry(self.frame_main)
+        self.e_y.config(bg=self.color_4,fg=self.color_1,font=("Helvetica", 20))
+        self.e_y.place(x=650, y=6,width=38,height=38)
+
+        
+    def iniciar(self):
+        self.window.mainloop()
+    def color(self,color):
+        if color==1:
+            return "#66ff66"
+        elif color==2:
+            return "#6666ff"
+        elif color==3:
+            return "#006666"
+        elif color==4:
+            return "#66f6f6"
+        elif color==5:
+            return "#060666"
+        else:
+            return "#ffffff"
+
+    def mostrar_piezas(self,frame,estado,casilla):
+        x=110/len(estado[0])
+        y=110/len(estado)
+        l = Label(frame)
+        l.config(bg=self.color(casilla),highlightbackground=self.color_1,relief=GROOVE, bd=2)
+        l.place(x=25, y=25+abs(55-y),width=x,height=y)
+        for i in range(len(estado)):
+            for j in range(len(estado[i])):
+                l = Label(frame)
+                l.config(bg=self.color(estado[i][j]),highlightbackground=self.color_1,relief=GROOVE, bd=2)
+                l.place(x=25+(j*x), y=25+abs(55-y)+y+(i*y),width=x,height=y)
+                
+        frame.update()
+
+    def crear_matriz(self,x,y):
+        m=[]
+        for i in range(y):
+            m.append([]) 
+            for j in range(x):
+                m[i].append(j+1)
+        return m
+
+    def crear_final(self):
+        self.frame_final.destroy()
 
         self.frame_final = Frame(self.window,bd=1)
         self.frame_final.config(bg=self.color_4,highlightbackground=self.color_1,relief=GROOVE, bd=2)
         self.frame_final.place( width=250, height=250,x=450, y=75)
 
+        self.b_final = Button(self.frame_final, text="Cambiar", command=self.window.quit)
+        self.b_final.config(bg=self.color_6, bd=0,fg=self.color_4)
+        self.b_final.place(x=180, y=210, width=68, height=38)
+
+        self.l_final = Label(self.frame_final, text="  Estado Final")
+        self.l_final.config(bg=self.color_6,fg=self.color_4,font=("Helvetica", 10),anchor=W,justify=LEFT)
+        self.l_final.place(x=-1, y=-1,width=250,height=25)
+
+
+    def crear_step(self):
+        self.frame_step.destroy()
+
         self.frame_step = Frame(self.window)
         self.frame_step.config(bg=self.color_4,highlightbackground=self.color_1,relief=GROOVE, bd=2)
         self.frame_step.place( width=250, height=250,x=100, y=350)
-        
+
+        self.b_step = Button(self.frame_step, text="resolver", command=self.resolver)
+        self.b_step.config(bg=self.color_6,bd=0,fg=self.color_4)
+        self.b_step.place(x=180, y=210, width=68, height=38)
+
+        self.l_step = Label(self.frame_step, text="  Paso")
+        self.l_step.config(bg=self.color_6,fg=self.color_4,font=("Helvetica", 10),anchor=W,justify=LEFT)
+        self.l_step.place(x=-1, y=-1,width=250,height=25)
+
+    def crear_steps(self):
         self.frame_steps = Frame(self.window)
         self.frame_steps.config(bg=self.color_4,highlightbackground=self.color_1,relief=GROOVE, bd=2)
         self.frame_steps.place( width=250, height=250,x=450, y=350)
@@ -46,67 +139,58 @@ class GUI:
         s['command'] = self.L.yview
         self.L['yscrollcommand'] = s.set
         self.L.bind('<<ListboxSelect>>',self.mostrar_pasos)
+        self.l_steps = Label(self.frame_steps, text="  Pasos")
+        self.l_steps.config(bg=self.color_6,fg=self.color_4,font=("Helvetica", 10),anchor=W,justify=LEFT)
+        self.l_steps.place(x=-1, y=-1,width=250,height=25)
 
-        self.b_init = Button(self.frame_init, text="Save", command=self.resolver)
+    def crear_init(self):
+        self.frame_init.destroy()
+        self.frame_init = Frame(self.window)
+        self.frame_init.config(bg=self.color_4,highlightbackground=self.color_1,relief=GROOVE, bd=2)
+        self.frame_init.place( width=250, height=250,x=100, y=75)
+
+        self.e_data = Entry(self.frame_init)
+        self.e_data.config(bg=self.color_4,fg=self.color_1,font=("Helvetica", 10))
+        self.e_data.place(x=0, y=210, width=180, height=38)
+
+
+        self.b_init = Button(self.frame_init, text="Cargar", command=self.cargar)
         self.b_init.config(bg=self.color_6, bd=0,fg=self.color_4)
-        self.b_init.place(x=200, y=200, width=46, height=46)
-
-        self.b_final = Button(self.frame_final, text="Save", command=self.window.quit)
-        self.b_final.config(bg=self.color_6, bd=0,fg=self.color_4)
-        self.b_final.place(x=200, y=200, width=46, height=46)
-
-        self.b_step = Button(self.frame_step, text="resolver", command=self.resolver)
-        self.b_step.config(bg=self.color_6,bd=0,fg=self.color_4)
-        self.b_step.place(x=180, y=210, width=68, height=38)
-
-        self.b_crear = Button(self.frame_main, text="Crear", command=self.crear)
-        self.b_crear.config(bg=self.color_6,bd=0,fg=self.color_4)
-        self.b_crear.place(x=700, y=2, width=98, height=46)
+        self.b_init.place(x=180, y=210, width=68, height=38)
 
         self.l_init = Label(self.frame_init, text="  Estado inicial")
         self.l_init.config(bg=self.color_6,fg=self.color_4,font=("Helvetica", 10),anchor=W,justify=LEFT)
         self.l_init.place(x=-1, y=-1,width=250,height=25)
 
-        self.l_final = Label(self.frame_final, text="  Estado Final")
-        self.l_final.config(bg=self.color_6,fg=self.color_4,font=("Helvetica", 10),anchor=W,justify=LEFT)
-        self.l_final.place(x=-1, y=-1,width=250,height=25)
+    def cargar(self):
+        data=self.e_data.get()
+        lineas = data.split(";")
+        matriz=[]
+        for i in range(len(lineas)):
+            matriz.append([])
+            for j in lineas[i].split(","):
+                matriz[i].append(int(j))
+        print(matriz)
+        self.inicio["estado"]=matriz
+        self.crear_init()
+        self.mostrar_piezas(self.frame_init,self.inicio.get("estado"),self.inicio.get("casilla"))
 
-        self.l_step = Label(self.frame_step, text="  Paso")
-        self.l_step.config(bg=self.color_6,fg=self.color_4,font=("Helvetica", 10),anchor=W,justify=LEFT)
-        self.l_step.place(x=-1, y=-1,width=250,height=25)
-
-        self.l_steps = Label(self.frame_steps, text="  Pasos")
-        self.l_steps.config(bg=self.color_6,fg=self.color_4,font=("Helvetica", 10),anchor=W,justify=LEFT)
-        self.l_steps.place(x=-1, y=-1,width=250,height=25)
-
-    def iniciar(self):
-        self.window.mainloop()
-    def color(self,color):
-        if color==1:
-            return "#66ff66"
-        elif color==2:
-            return "#6666ff"
-        elif color==3:
-            return "#006666"
-        else:
-            return "#ffffff"
-
-    def mostrar_piezas(self,frame,estado,casilla):
-        x=125/len(estado)
-        y=125/len(estado[0])
-        l = Label(frame)
-        l.config(bg=self.color(casilla),highlightbackground=self.color_1,relief=GROOVE, bd=2)
-        l.place(x=25, y=50,width=x,height=y)
-        for i in range(len(estado)):
-            for j in range(len(estado[i])):
-                l = Label(frame)
-                l.config(bg=self.color(estado[i][j]),highlightbackground=self.color_1,relief=GROOVE, bd=2)
-                l.place(x=25+(j*x), y=50+y+(i*y),width=x,height=y)
-                
-        frame.update()
-        
     def crear(self):
+        self.tb=Torre_Babel()
+        self.ruta=[]
         #self.frame_step()
+        self.crear_init()
+        self.crear_final()
+        self.crear_step()
+        self.crear_steps()
+        x=int(self.e_x.get())
+        y=int(self.e_y.get())
+        m1=self.crear_matriz(x,y)
+        m2=copy.deepcopy(m1)
+        m1[1][0]=2
+        m1[0][1]=1
+        self.inicio["estado"]=m1
+        self.fin["estado"]=m2
         self.mostrar_piezas(self.frame_init,self.inicio.get("estado"),self.inicio.get("casilla"))
         self.mostrar_piezas(self.frame_final,self.fin.get("estado"),self.fin.get("casilla"))
         

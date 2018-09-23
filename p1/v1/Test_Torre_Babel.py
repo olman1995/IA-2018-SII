@@ -63,8 +63,7 @@ class Test_Torre_Babel(unittest.TestCase):
         print(tb.calcular_heuristica([[3,2,1],[3,2,-1],[3,2,1]]))   
         print(tb.calcular_heuristica([[1,2,3],[2,-1,3],[1,2,3]]))        
         print(tb.calcular_heuristica([[1,2,3],[-1,2,3],[1,2,3]])) 
-        print(tb.calcular_heuristica([[-1,2,3],[1,2,3],[1,2,3]])) 
-
+        
         
 if __name__ == '__main__':
     unittest.main()
