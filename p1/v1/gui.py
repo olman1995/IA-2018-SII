@@ -1,4 +1,5 @@
 from torre_babel import Torre_Babel
+from tkinter.filedialog import askopenfilename
 from tkinter import *
 import copy
 
@@ -40,6 +41,10 @@ class GUI:
         self.b_crear = Button(self.frame_main, text="Crear", command=self.crear)
         self.b_crear.config(bg=self.color_6,bd=0,fg=self.color_4)
         self.b_crear.place(x=700, y=2, width=98, height=46)
+
+        self.b_archivo = Button(self.frame_main, text="Cargar archivo", command=self.leer_archivo)
+        self.b_archivo.config(bg=self.color_6,bd=0,fg=self.color_4)
+        self.b_archivo.place(x=375, y=2, width=98, height=46)
 
         self.l_x = Label(self.frame_main, text="X:")
         self.l_x.config(bg=self.color_2,fg=self.color_4,font=("Helvetica", 20),anchor=W,justify=LEFT)
@@ -87,6 +92,48 @@ class GUI:
                 l.place(x=25+(j*x), y=25+abs(55-y)+y+(i*y),width=x,height=y)
                 
         frame.update()
+    def leer_archivo(self):
+        filename = askopenfilename() 
+        f = open(filename)
+        data = f.readlines()
+        f.close()
+        inicio=[]
+        final=[]
+        cambio= True
+        for i in data:
+
+            if i.replace("\n","") == "final" :
+                cambio = False
+            elif i.replace("\n","") == "init":
+                cambio = True
+            else:
+                if cambio:
+                    inicio.append(i.replace("\n","").split(","))
+                else:
+                    final.append(i.replace("\n","").split(","))
+        init=[]
+        fin=[]
+        for i in range(len(inicio)):
+            init.append([])
+            fin.append([])
+            for j in range(len(inicio[i])):
+                init[i].append(int(inicio[i][j]))
+                fin[i].append(int(final[i][j]))
+        self.inicio["casilla"]=init[0][0]
+        self.fin["casilla"]=init[0][0]
+        mi=init[1:]
+        mf=fin[1:]
+        self.inicio["estado"]=mi
+        self.fin["estado"]=mf
+        self.tb=Torre_Babel()
+        self.ruta=[]
+        self.crear_init()
+        self.crear_final()
+        self.crear_step()
+        self.crear_steps()
+        self.mostrar_piezas(self.frame_init,self.inicio.get("estado"),self.inicio.get("casilla"))
+        self.mostrar_piezas(self.frame_final,self.fin.get("estado"),self.fin.get("casilla"))
+        
 
     def crear_matriz(self,x,y):
         m=[]
