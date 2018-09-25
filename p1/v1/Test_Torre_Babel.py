@@ -1,26 +1,27 @@
 import unittest
 from torre_babel import Torre_Babel
+#python -m unittest Test_Torre_Babel
 class Test_Torre_Babel(unittest.TestCase):
 
     def test_0(self):
         print("test de la clase torre babel")
 
     def test_1(self):
-        print("test 1: abajo")
+        print("test 1: Movimiento abajo")
         tb=Torre_Babel()
         tb.estado_actual={"casilla":-1,"estado":[[1,2,3],[2,-1,3],[1,2,3]],"heuristico":0,"costo":0,"ruta":[]}
         tb.fin=[[1,2,3],[1,2,3],[1,2,3]]
         print(tb.t1(1,1))
        
     def test_2(self):
-        print("test 2: arriba")
+        print("test 2: Movimiento arriba")
         tb=Torre_Babel()
         tb.estado_actual={"casilla":-1,"estado":[[1,2,3],[2,-1,3],[1,2,3]],"heuristico":0,"costo":0,"ruta":[]}
         tb.fin=[[1,2,3],[1,2,3],[1,2,3]]
         print(tb.t2(1,1))
        
     def test_3(self):
-        print("test 3: derecha")
+        print("test 3: Movimiento derecha")
         tb=Torre_Babel()
         tb.estado_actual={"casilla":-1,"estado":[[1,2,3],[2,-1,3],[1,2,3]],"heuristico":0,"costo":0,"ruta":[]}
         tb.fin=[[1,2,3],[1,2,3],[1,2,3]]

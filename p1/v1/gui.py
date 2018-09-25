@@ -126,11 +126,13 @@ class GUI:
         self.inicio["estado"]=mi
         self.fin["estado"]=mf
         self.tb=Torre_Babel()
+        
         self.ruta=[]
         self.crear_init()
         self.crear_final()
         self.crear_step()
         self.crear_steps()
+        self.e_data.insert(0,self.m_to_text(mi))
         self.mostrar_piezas(self.frame_init,self.inicio.get("estado"),self.inicio.get("casilla"))
         self.mostrar_piezas(self.frame_final,self.fin.get("estado"),self.fin.get("casilla"))
         
@@ -217,9 +219,9 @@ class GUI:
             matriz.append([])
             for j in lineas[i].split(","):
                 matriz[i].append(int(j))
-        print(matriz)
         self.inicio["estado"]=matriz
         self.crear_init()
+        self.e_data.insert(0,self.m_to_text(matriz))
         self.mostrar_piezas(self.frame_init,self.inicio.get("estado"),self.inicio.get("casilla"))
 
     def crear(self):
@@ -238,9 +240,24 @@ class GUI:
         m1[0][1]=1
         self.inicio["estado"]=m1
         self.fin["estado"]=m2
+        self.e_data.insert(0,self.m_to_text(m1))
         self.mostrar_piezas(self.frame_init,self.inicio.get("estado"),self.inicio.get("casilla"))
         self.mostrar_piezas(self.frame_final,self.fin.get("estado"),self.fin.get("casilla"))
-        
+    
+    def m_to_text(self,m):
+        text=""
+        for i in range(len(m)):
+            for j in range(len(m[i])):
+                if len(m[i])-1 == j:
+                    text=text+str(m[i][j])
+                else:
+                    text=text+str(m[i][j])+","
+            if len(m)-1 != i:
+                text=text+";"
+        return text
+
+
+
     def mostrar_pasos(self,evt):
         elemento=int(self.L.get(ACTIVE))
         self.mostrar_piezas(self.frame_step,self.ruta[elemento].get("estado"),self.ruta[elemento].get("casilla"))
