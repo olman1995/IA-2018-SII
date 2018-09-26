@@ -218,9 +218,9 @@ class GUI:
             self.mat_estado_final=self.matriz_final_vertical()
         else:
             self.mat_ini=self.matriz_inicial_vertical()
-            self.mat_ini=self.matriz_trans(mat_ini)
+            self.mat_ini=self.matriz_trans(self.mat_ini)
             self.mat_estado_final=self.matriz_final_vertical()
-            self.mat_estado_final=self.matriz_trans(mat_estado_final)
+            self.mat_estado_final=self.matriz_trans(self.mat_estado_final)
         self.mostrar_piezas(self.frame_init,self.mat_ini,self.inicio.get("casilla"))
         self.mostrar_piezas(self.frame_final,self.mat_estado_final,self.fin.get("casilla"))
         
