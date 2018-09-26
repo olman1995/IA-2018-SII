@@ -234,9 +234,3 @@ class GUI:
             self.L.insert(i, str(i))
 
     
-
-def main():
-    g = GUI()
-    g.iniciar()
-
-main()
