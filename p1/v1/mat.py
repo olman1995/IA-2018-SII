@@ -14,15 +14,7 @@ def matriz_fin(tam):
         x=1
     return matriz
 
-def matriz_fin_trans(mat):
-    n=0
-    while n < len(mat):
-        print(mat[n])
-        n+=1
-    print()
-    print("-------------------------------------------")
-    print()
-    matriz=[[]]
+def matriz_trans(mat):
     matriz=[[]]
     c=0
     x=0
@@ -34,12 +26,6 @@ def matriz_fin_trans(mat):
             matriz+=[[]]
         c+=1
         x=0
-    n=0
-    while n < len(matriz):
-        print(matriz[n])
-        n+=1
-
-    print()
     return matriz
 
 def matriz_ini(tam):
