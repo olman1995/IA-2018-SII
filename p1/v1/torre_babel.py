@@ -109,6 +109,7 @@ class Torre_Babel:
         for i in range(len(estado[1])):
             valores_actual.append([])
             valores_final.append([])
+        
         for i in range(len(estado)):
             for j in range(len(estado[i])):
                 if estado[i][j] != -1:
@@ -123,9 +124,10 @@ class Torre_Babel:
                 for k in valores_final[i]:
                     r=r+(abs(j[0]-k[0])+abs(j[1]-k[1]))
                 subtotal[i]=subtotal[i]+(r/len(j))
+            subtotal[i]=subtotal[i]/len(valores_actual[i])
         del valores_actual
         del valores_final
-        total=(sum(subtotal)/len(subtotal))
+        total=(sum(subtotal)/len(subtotal))-(len(estado))
         return total
     
     def A_estrella(self):

@@ -1,9 +1,13 @@
 from torre_babel import Torre_Babel
 from tkinter import *
+from tkinter.filedialog import askopenfilename
+import copy
+import random
+
 class GUI:
     def __init__(self):
-        self.inicio={"casilla":-1,"estado":[[1,2,3],[2,1,3],[1,2,3]],"heuristico":0,"costo":0,"ruta":[]}
-        self.fin={"casilla":-1,"estado":[[1,2,3],[1,2,3],[1,2,3]],"heuristico":0,"costo":0,"ruta":[]}
+        self.inicio={"casilla":-1,"estado":[[2,5,3,4,1],[1,3,5,4,2],[1,2,3,4,5],[3,3,4,4,1],[2,1,5,2,5]],"heuristico":0,"costo":0,"ruta":[]}
+        self.fin={"casilla":-1,"estado":[[1,2,3,4,5],[1,2,3,4,5],[1,2,3,4,5],[1,2,3,4,5],[1,2,3,4,5]],"heuristico":0,"costo":0,"ruta":[]}
         self.ruta=[]
         self.tb=Torre_Babel()
         self.window = Tk()
@@ -15,29 +19,45 @@ class GUI:
         self.color_6="#7C7CAD"
         self.color_7="#C6C6C6"
         self.window.title("Torre de babel")
-        self.window.geometry('800x625+25+25')
+        self.window.geometry('1000x650')
         self.frame_main = Frame(self.window)
         self.frame_main.config(bg=self.color_3)
-        self.frame_main.place( width=800, height=625,x=0, y=0)
+        self.frame_main.place( width=1000, height=650,x=0, y=0)
         self.label = Label(self.frame_main, text="  Torre de babel")
         self.label.config(bg=self.color_2,fg=self.color_4,font=("Helvetica", 20),anchor=W,justify=LEFT)
-        self.label.place(x=0, y=0,width=800,height=50)
+        self.label.place(x=0, y=0,width=1000,height=50)
+
+        self.l_tamanno = Label(self.frame_main, text="Tamaño: ")
+        self.l_tamanno.config(bg="white", bd=0,fg="black",font=("Helvetica", 14))
+        self.l_tamanno.place(x=40, y=100)
+        
+        self.e_tamanno = Entry(self.frame_main)
+        self.e_tamanno.config(bg="white", bd=0,fg="black",font=("Helvetica", 14))
+        self.e_tamanno.place(x=120, y=100,width=50,height=30)
+
+        self.l_conf = Label(self.frame_main, text="Configuración: ")
+        self.l_conf.config(bg="white", bd=0,fg="black",font=("Helvetica", 14))
+        self.l_conf.place(x=40, y=150)
+
+        self.e_conf = Entry(self.frame_main)
+        self.e_conf.config(bg="white", bd=0,fg="black",font=("Helvetica", 14))
+        self.e_conf.place(x=170, y=150,width=100,height=30)
         
         self.frame_init = Frame(self.window)
         self.frame_init.config(bg=self.color_4,highlightbackground=self.color_1,relief=GROOVE, bd=2)
-        self.frame_init.place( width=250, height=250,x=100, y=75)
+        self.frame_init.place( width=250, height=250,x=360, y=75)
 
         self.frame_final = Frame(self.window,bd=1)
         self.frame_final.config(bg=self.color_4,highlightbackground=self.color_1,relief=GROOVE, bd=2)
-        self.frame_final.place( width=250, height=250,x=450, y=75)
+        self.frame_final.place( width=250, height=250,x=700, y=75)
 
         self.frame_step = Frame(self.window)
         self.frame_step.config(bg=self.color_4,highlightbackground=self.color_1,relief=GROOVE, bd=2)
-        self.frame_step.place( width=250, height=250,x=100, y=350)
+        self.frame_step.place( width=250, height=250,x=360, y=350)
         
         self.frame_steps = Frame(self.window)
         self.frame_steps.config(bg=self.color_4,highlightbackground=self.color_1,relief=GROOVE, bd=2)
-        self.frame_steps.place( width=250, height=250,x=450, y=350)
+        self.frame_steps.place( width=250, height=250,x=700, y=350)
 
         s = Scrollbar(self.frame_steps)
         self.L = Listbox(self.frame_steps)
@@ -46,6 +66,7 @@ class GUI:
         s['command'] = self.L.yview
         self.L['yscrollcommand'] = s.set
         self.L.bind('<<ListboxSelect>>',self.mostrar_pasos)
+
 
         self.b_init = Button(self.frame_init, text="Save", command=self.resolver)
         self.b_init.config(bg=self.color_6, bd=0,fg=self.color_4)
@@ -61,7 +82,11 @@ class GUI:
 
         self.b_crear = Button(self.frame_main, text="Crear", command=self.crear)
         self.b_crear.config(bg=self.color_6,bd=0,fg=self.color_4)
-        self.b_crear.place(x=700, y=2, width=98, height=46)
+        self.b_crear.place(x=800, y=2, width=98, height=46)
+
+        self.b_cargar = Button(self.frame_main, text="Cargar archivo", command=self.leer_archivo)
+        self.b_cargar.config(bg=self.color_6,bd=0,fg=self.color_4)
+        self.b_cargar.place(x=900, y=2, width=98, height=46)
 
         self.l_init = Label(self.frame_init, text="  Estado inicial")
         self.l_init.config(bg=self.color_6,fg=self.color_4,font=("Helvetica", 10),anchor=W,justify=LEFT)
@@ -81,15 +106,51 @@ class GUI:
 
     def iniciar(self):
         self.window.mainloop()
+
+
     def color(self,color):
         if color==1:
-            return "#66ff66"
+            return "violet"
         elif color==2:
-            return "#6666ff"
+            return "green"
         elif color==3:
-            return "#006666"
+            return "red"
+        elif color==4:
+            return "orange"
+        elif color==5:
+            return "purple"
+        elif color==6:
+            return "blue"
+        elif color==7:
+            return "gray"
+        elif color==8:
+            return "pale green"
+        elif color==9:
+            return "gold"
+        elif color==10:
+            return "aqua"
+        elif color==11:
+            return "pink"
+        elif color==12:
+            return "snow"
+        elif color==13:
+            return "blanched almond"
+        elif color==14:
+            return "navajo white"
+        elif color==15:
+            return "light slate gray"
+        elif color==16:
+            return "slate blue"
+        elif color==17:
+            return "dark turquoise"
+        elif color==18:
+            return "dark olive green"
+        elif color==19:
+            return "black"
         else:
-            return "#ffffff"
+            return "lime green" 
+
+        
 
     def mostrar_piezas(self,frame,estado,casilla):
         x=125/len(estado)
@@ -102,19 +163,126 @@ class GUI:
                 l = Label(frame)
                 l.config(bg=self.color(estado[i][j]),highlightbackground=self.color_1,relief=GROOVE, bd=2)
                 l.place(x=25+(j*x), y=50+y+(i*y),width=x,height=y)
+            
                 
         frame.update()
+
+    def leer_archivo(self):
+        filename = askopenfilename() 
+        f = open(filename)
+        data = f.readlines()
+        f.close()
+        inicio=[]
+        final=[]
+        cambio= True
+        for i in data:
+
+            if i.replace("\n","") == "final" :
+                cambio = False
+            elif i.replace("\n","") == "init":
+                cambio = True
+            else:
+                if cambio:
+                    inicio.append(i.replace("\n","").split(","))
+                else:
+                    final.append(i.replace("\n","").split(","))
+        init=[]
+        fin=[]
+        for i in range(len(inicio)):
+            init.append([])
+            fin.append([])
+            for j in range(len(inicio[i])):
+                init[i].append(int(inicio[i][j]))
+                fin[i].append(int(final[i][j]))
+        self.inicio["casilla"]=init[0][0]
+        self.fin["casilla"]=init[0][0]
+        mi=init[1:]
+        mf=fin[1:]
+        self.inicio["estado"]=mi
+        self.fin["estado"]=mf
+        self.tb=Torre_Babel()
+        
+        self.ruta=[]
+        self.crear_init()
+        self.crear_final()
+        self.crear_step()
+        self.crear_steps()
+        self.e_data.insert(0,self.m_to_text(mi))
+        self.mostrar_piezas(self.frame_init,self.inicio.get("estado"),self.inicio.get("casilla"))
+        self.mostrar_piezas(self.frame_final,self.fin.get("estado"),self.fin.get("casilla"))
+
+    def matriz_trans(self,mat):
+        matriz=[[]]
+        c=0
+        x=0
+        while c<len(mat):
+            while x<len(mat):
+                matriz[c]+=[mat[x][c]]
+                x+=1
+            if len(matriz)<len(mat):
+                matriz+=[[]]
+            c+=1
+            x=0
+        return matriz
+
+    def matriz_final_vertical(self):
+        matriz=[[]]
+        c=0
+        x=1
+        while c<int(self.e_tamanno.get()):
+            while x<=int(self.e_tamanno.get()):
+                matriz[c]+=[x]
+                x+=1
+            if len(matriz)<int(self.e_tamanno.get()):
+                matriz+=[[]]
+            c+=1
+            x=1
+        return matriz
+
+    def matriz_inicial_vertical(self):
+        matriz=[[]]
+        c=0
+        x=1
+        while c<int(self.e_tamanno.get()):
+            while x<=int(self.e_tamanno.get()):
+                n=random.randint(0, int(self.e_tamanno.get()))
+                while n in matriz[c]:
+                    n=random.randint(0, int(self.e_tamanno.get()))
+                matriz[c]+=[n]
+                x+=1
+            if len(matriz)<int(self.e_tamanno.get()):
+                matriz+=[[]]
+            c+=1
+            x=1
+        return matriz
         
     def crear(self):
         #self.frame_step()
-        self.mostrar_piezas(self.frame_init,self.inicio.get("estado"),self.inicio.get("casilla"))
-        self.mostrar_piezas(self.frame_final,self.fin.get("estado"),self.fin.get("casilla"))
+        conf=self.e_conf.get()
+        if conf=="vertical":
+            self.mat_ini=self.matriz_inicial_vertical()
+            self.mat_estado_final=self.matriz_final_vertical()
+        else:
+            self.mat_ini=self.matriz_inicial_vertical()
+            self.mat_ini=self.matriz_trans(mat_ini)
+            self.mat_estado_final=self.matriz_final_vertical()
+            self.mat_estado_final=self.matriz_trans(mat_estado_final)
+        self.mostrar_piezas(self.frame_init,self.mat_ini,self.inicio.get("casilla"))
+        self.mostrar_piezas(self.frame_final,self.mat_estado_final,self.fin.get("casilla"))
         
     def mostrar_pasos(self,evt):
         elemento=int(self.L.get(ACTIVE))
         self.mostrar_piezas(self.frame_step,self.ruta[elemento].get("estado"),self.ruta[elemento].get("casilla"))
 
     def resolver(self):
-        self.ruta=self.tb.iniciar(self.inicio.get("estado"),self.fin.get("estado"))
+        self.ruta=self.tb.iniciar(self.mat_ini,self.mat_estado_final)
         for i in range(len(self.ruta)): 
             self.L.insert(i, str(i))
+
+    
+
+##def main():
+##    g = GUI()
+##    g.iniciar()
+##
+##main()
