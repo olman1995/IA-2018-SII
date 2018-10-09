@@ -16,7 +16,7 @@ public class ProyectoIIIA {
      */
     public static void main(String[] args) {
         // TODO code application logic here}
-        int numero=5;
+        int numero=2;
         Environment clips;
         clips = new Environment();
         clips.load(".\\src\\proyecto\\ii\\ia\\base_conocimiento\\setup.CLP");
@@ -25,6 +25,7 @@ public class ProyectoIIIA {
         clips.run();
         String res=clips.getInputBuffer();
         System.out.println(res);
+        clips.destroy();
     }
     
 }

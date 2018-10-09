@@ -56,27 +56,32 @@
 )
 (defrule MAIN::paso_1
     (p1 ?x) => 
-    (if (>= ?x 12) 
+    (if (> ?x 11) 
         then
+            (printout t "Menores" crlf)
             (assert(p2 (- ?x 12)))
             (assert(Mm 0))
         else
+            (printout t "Mayores" crlf)
             (assert(p2 ?x))
             (assert(Mm 1)) 
     )
 )
 (defrule paso_2
     (p2 ?x) => 
-    (if (> ?x 7) 
+    (if (> ?x 6) 
         then
+            (printout t "12-7" crlf)
             (assert(p3 (- 12 ?x)))
             (assert(sb 0))
         else
             (if (> ?x 4)
                 then
+                    (printout t "7-3" crlf)
                     (assert(p3 ?x))
                     (assert(sb 1))
                 else
+                    (printout t "4-0" crlf)
                     (assert(p3 ?x))
                     (assert(sb 1))
             ) 
