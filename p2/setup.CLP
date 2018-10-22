@@ -37,31 +37,37 @@
 	(r true)
 )
 (deffunction get_scale (?scale ?Mm ?sb ?x)
-    (do-for-all-facts ((?f ?scale)) 
-        (if (= ?f:Mm ?Mm)
-            then
-                (if (= ?sb 1)
-                    then
-                        (if (= ?x ?f:sostenido)
-                            then
-                                (printout t ?f:name crlf)
+	( if (= ?x 0)
+		then 
+			(printout t (fact-slot-value 1 name) crlf)
+		else
+			(do-for-all-facts ((?f ?scale)) 
+				(if (= ?f:Mm ?Mm)
+					then
+						(if (= ?sb 1)
+							then
+								(if (= ?x ?f:sostenido)
+									then
+										(printout t ?f:name crlf)
+										
+								)
 								
-                        )
-                        
-                    else
-                        (if (= ?x ?f:bemol)
-                            then
-                                (printout t ?f:name crlf)
-								
-                        )
-                )
-        ) 
-    )
+							else
+								(if (= ?x ?f:bemol)
+									then
+										(printout t ?f:name crlf)
+										
+								)
+						)
+				) 
+			)
+    ) 
+    
 )
 
 (defrule MAIN::paso_0
     (r ?x) => 
-    (printout t "Enter the number drawn (0-24): ")
+    (printout t "Enter the number drawn (1-24): ")
 	(assert (p1 (string-to-field (readline))))
 )
 
@@ -92,7 +98,7 @@
                     (assert(p3 ?x))
                     (assert(sb 1))
                 else
-                    (printout t "4-0" crlf)
+                    (printout t "4-1" crlf)
                     (assert(p3 ?x))
                     (assert(sb 1))
             ) 
