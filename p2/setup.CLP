@@ -45,12 +45,14 @@
                         (if (= ?x ?f:sostenido)
                             then
                                 (printout t ?f:name crlf)
+								(halt)
                         )
                         
                     else
                         (if (= ?x ?f:bemol)
                             then
                                 (printout t ?f:name crlf)
+								
                         )
                 )
         ) 
@@ -59,7 +61,7 @@
 
 (defrule MAIN::paso_0
     (r ?x) => 
-    (printout t "Enter the number drawn (1-24): ")
+    (printout t "Enter the number drawn (0-24): ")
 	(assert (p1 (string-to-field (readline))))
 )
 
@@ -86,7 +88,7 @@
         else
             (if (> ?x 4)
                 then
-                    (printout t "7-3" crlf)
+                    (printout t "7-5" crlf)
                     (assert(p3 ?x))
                     (assert(sb 1))
                 else
