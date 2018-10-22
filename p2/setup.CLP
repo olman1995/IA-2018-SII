@@ -45,7 +45,7 @@
                         (if (= ?x ?f:sostenido)
                             then
                                 (printout t ?f:name crlf)
-								(halt)
+								
                         )
                         
                     else
