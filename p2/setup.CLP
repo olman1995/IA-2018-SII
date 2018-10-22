@@ -39,7 +39,12 @@
 (deffunction get_scale (?scale ?Mm ?sb ?x)
 	( if (= ?x 0)
 		then 
-			(printout t (fact-slot-value 1 name) crlf)
+			(if (= 1 ?Mm)
+				then
+					(printout t (fact-slot-value 1 name) crlf)
+				else
+					(printout t (fact-slot-value 13 name) crlf)
+			)
 		else
 			(do-for-all-facts ((?f ?scale)) 
 				(if (= ?f:Mm ?Mm)
