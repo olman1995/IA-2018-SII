@@ -5,6 +5,7 @@
  */
 package gui_ia;
 
+import net.sf.clipsrules.jni.*;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -18,6 +19,7 @@ import javax.sound.sampled.UnsupportedAudioFileException;
  * @author Fer Alvarado
  */
 public class Inicio extends javax.swing.JFrame {
+    
     public Clip clip;
     public String ruta="/Sonido/";
     /**
@@ -50,6 +52,8 @@ public class Inicio extends javax.swing.JFrame {
         circulo = new javax.swing.JLabel();
         Escala = new javax.swing.JLabel();
         Escala1 = new javax.swing.JLabel();
+        jTextField1 = new javax.swing.JTextField();
+        jButton1 = new javax.swing.JButton();
         jPanel3 = new javax.swing.JPanel();
         Do = new javax.swing.JButton();
         DoS = new javax.swing.JButton();
@@ -105,6 +109,24 @@ public class Inicio extends javax.swing.JFrame {
         Escala1.setFont(new java.awt.Font("Tahoma", 2, 18)); // NOI18N
         Escala1.setForeground(new java.awt.Color(204, 153, 0));
         Escala1.setText("Hola");
+        Escala1.setName("LSalidad"); // NOI18N
+
+        jTextField1.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
+        jTextField1.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        jTextField1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jTextField1ActionPerformed(evt);
+            }
+        });
+
+        jButton1.setBackground(new java.awt.Color(0, 0, 0));
+        jButton1.setForeground(new java.awt.Color(204, 153, 0));
+        jButton1.setText("Obtener Escala");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
@@ -119,10 +141,16 @@ public class Inicio extends javax.swing.JFrame {
                         .addComponent(num, javax.swing.GroupLayout.PREFERRED_SIZE, 77, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addGap(53, 53, 53)
-                        .addComponent(Escala)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(Escala1, javax.swing.GroupLayout.PREFERRED_SIZE, 142, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(189, Short.MAX_VALUE))
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(jPanel2Layout.createSequentialGroup()
+                                .addComponent(Escala)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(Escala1, javax.swing.GroupLayout.PREFERRED_SIZE, 142, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(jPanel2Layout.createSequentialGroup()
+                                .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 156, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, 176, Short.MAX_VALUE)))))
+                .addGap(59, 59, 59))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -134,10 +162,14 @@ public class Inicio extends javax.swing.JFrame {
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addGap(43, 43, 43)
                         .addComponent(num, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(148, 148, 148)
+                        .addGap(43, 43, 43)
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 47, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 47, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(61, 61, 61)
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(Escala)
-                            .addComponent(Escala1))))
+                            .addComponent(Escala1, javax.swing.GroupLayout.PREFERRED_SIZE, 83, javax.swing.GroupLayout.PREFERRED_SIZE))))
                 .addContainerGap(32, Short.MAX_VALUE))
         );
 
@@ -950,6 +982,31 @@ public class Inicio extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_Mi2ActionPerformed
 
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+
+        try {
+            int numero=Integer.parseInt(jTextField1.getText());
+            Environment clips;
+            clips = new Environment();
+            clips.load(".\\src\\base_conocimiento\\setup.CLP");
+            clips.reset();
+            String evalStr = "(assert (p1 "+numero+"))";
+            PrimitiveValue rv  = clips.eval(evalStr);
+            clips.run();
+            int len=clips.getFactList().size()-1;
+            String res = clips.getFactList().get(len).getSlotValues().get(0).getSlotValue();
+            System.out.println(res);
+            //clips.destroy();
+            Escala1.setText(res);
+        } catch (Exception ex) {
+            Logger.getLogger(Inicio.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void jTextField1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField1ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jTextField1ActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -1018,8 +1075,10 @@ public class Inicio extends javax.swing.JFrame {
     private javax.swing.JButton Sol1S;
     private javax.swing.JButton SolS;
     private javax.swing.JLabel circulo;
+    private javax.swing.JButton jButton1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
+    private javax.swing.JTextField jTextField1;
     private javax.swing.JLabel num;
     // End of variables declaration//GEN-END:variables
 }
