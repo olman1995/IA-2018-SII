@@ -996,8 +996,9 @@ public class Inicio extends javax.swing.JFrame {
             int len=clips.getFactList().size()-1;
             String res = clips.getFactList().get(len).getSlotValues().get(0).getSlotValue();
             System.out.println(res);
-            //clips.destroy();
             Escala1.setText(res);
+           // clips.destroy();
+            
         } catch (Exception ex) {
             Logger.getLogger(Inicio.class.getName()).log(Level.SEVERE, null, ex);
         }
