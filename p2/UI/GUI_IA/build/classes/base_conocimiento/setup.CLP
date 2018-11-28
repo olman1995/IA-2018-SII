@@ -73,10 +73,10 @@
     (if (> ?x 12) 
         then
             (assert(p2 (- ?x 12)))
-            (assert(Mm 1))
+            (assert(Mm 0))
         else
             (assert(p2 ?x))
-            (assert(Mm 0)) 
+            (assert(Mm 1)) 
     )
 )
 (defrule paso_2

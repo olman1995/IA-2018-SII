@@ -27,21 +27,21 @@ class GUI:
         self.label.config(bg=self.color_2,fg=self.color_4,font=("Helvetica", 20),anchor=W,justify=LEFT)
         self.label.place(x=0, y=0,width=1000,height=50)
 
-        self.l_tamanno = Label(self.frame_main, text="Tamaño: ")
-        self.l_tamanno.config(bg="white", bd=0,fg="black",font=("Helvetica", 14))
-        self.l_tamanno.place(x=40, y=100)
+        self.l_tamanno = Label(self.frame_main, text="Tamaño: ",justify="right")
+        self.l_tamanno.config(bg=self.color_3, bd=0,fg="black",font=("Helvetica", 14))
+        self.l_tamanno.place(x=40, y=105, width=130)
         
         self.e_tamanno = Entry(self.frame_main)
-        self.e_tamanno.config(bg="white", bd=0,fg="black",font=("Helvetica", 14))
-        self.e_tamanno.place(x=120, y=100,width=50,height=30)
+        self.e_tamanno.config(bg="white", bd=1,fg="black",font=("Helvetica", 14),highlightbackground="black",justify="center")
+        self.e_tamanno.place(x=170, y=100,width=100,height=40)
 
-        self.l_conf = Label(self.frame_main, text="Configuración: ")
-        self.l_conf.config(bg="white", bd=0,fg="black",font=("Helvetica", 14))
-        self.l_conf.place(x=40, y=150)
+        self.l_conf = Label(self.frame_main, text="Configuración: ",justify="right")
+        self.l_conf.config(bg=self.color_3, bd=0,fg="black",font=("Helvetica", 14))
+        self.l_conf.place(x=40, y=155,width=130)
 
         self.e_conf = Entry(self.frame_main)
-        self.e_conf.config(bg="white", bd=0,fg="black",font=("Helvetica", 14))
-        self.e_conf.place(x=170, y=150,width=100,height=30)
+        self.e_conf.config(bg="white", bd=1,fg="black",font=("Helvetica", 14),highlightbackground="black",justify="center")
+        self.e_conf.place(x=170, y=150,width=100,height=40)
         
         self.frame_init = Frame(self.window)
         self.frame_init.config(bg=self.color_4,highlightbackground=self.color_1,relief=GROOVE, bd=2)
@@ -168,6 +168,8 @@ class GUI:
         frame.update()
 
     def leer_archivo(self):
+    
+
         filename = askopenfilename() 
         f = open(filename)
         data = f.readlines()
@@ -203,11 +205,11 @@ class GUI:
         self.tb=Torre_Babel()
         
         self.ruta=[]
-        self.crear_init()
-        self.crear_final()
-        self.crear_step()
-        self.crear_steps()
-        self.e_data.insert(0,self.m_to_text(mi))
+    
+        self.crear_area()
+    #    self.e_data.insert(0,self.m_to_text(mi))
+        self.mat_ini=self.inicio.get("estado")
+        self.mat_estado_final=self.fin.get("estado")
         self.mostrar_piezas(self.frame_init,self.inicio.get("estado"),self.inicio.get("casilla"))
         self.mostrar_piezas(self.frame_final,self.fin.get("estado"),self.fin.get("casilla"))
 
@@ -240,33 +242,99 @@ class GUI:
         return matriz
 
     def matriz_inicial_vertical(self):
-        matriz=[[]]
-        c=0
-        x=1
-        while c<int(self.e_tamanno.get()):
-            while x<=int(self.e_tamanno.get()):
-                n=random.randint(0, int(self.e_tamanno.get()))
-                while n in matriz[c]:
-                    n=random.randint(0, int(self.e_tamanno.get()))
-                matriz[c]+=[n]
-                x+=1
-            if len(matriz)<int(self.e_tamanno.get()):
-                matriz+=[[]]
-            c+=1
-            x=1
+        matriz=self.matriz_final_vertical()
+        for i in range(2):
+            x1=random.randint(1, int(self.e_tamanno.get()))-1
+            y1=random.randint(1, int(self.e_tamanno.get()))-1
+            x2=random.randint(1, int(self.e_tamanno.get()))-1
+            y2=random.randint(1, int(self.e_tamanno.get()))-1
+            s=matriz[x1][y1]
+            matriz[x1][y1]=matriz[x2][y2]
+            matriz[x2][y2]=s
         return matriz
+
+    def crear_area(self):
+        self.frame_init.destroy()
+        self.frame_final.destroy()
+        self.frame_step.destroy()
+        self.frame_steps.destroy()
+
+        self.frame_init = Frame(self.window)
+        self.frame_init.config(bg=self.color_4,highlightbackground=self.color_1,relief=GROOVE, bd=2)
+        self.frame_init.place( width=250, height=250,x=360, y=75)
+
+        self.frame_final = Frame(self.window,bd=1)
+        self.frame_final.config(bg=self.color_4,highlightbackground=self.color_1,relief=GROOVE, bd=2)
+        self.frame_final.place( width=250, height=250,x=700, y=75)
+
+        self.frame_step = Frame(self.window)
+        self.frame_step.config(bg=self.color_4,highlightbackground=self.color_1,relief=GROOVE, bd=2)
+        self.frame_step.place( width=250, height=250,x=360, y=350)
+        
+        self.frame_steps = Frame(self.window)
+        self.frame_steps.config(bg=self.color_4,highlightbackground=self.color_1,relief=GROOVE, bd=2)
+        self.frame_steps.place( width=250, height=250,x=700, y=350)
+
+        s = Scrollbar(self.frame_steps)
+        self.L = Listbox(self.frame_steps)
+        s.pack(side=RIGHT, fill=Y)
+        self.L.place( width=230, height=220,x=0, y=25)
+        s['command'] = self.L.yview
+        self.L['yscrollcommand'] = s.set
+        self.L.bind('<<ListboxSelect>>',self.mostrar_pasos)
+
+
+        self.b_init = Button(self.frame_init, text="Save", command=self.resolver)
+        self.b_init.config(bg=self.color_6, bd=0,fg=self.color_4)
+        self.b_init.place(x=200, y=200, width=46, height=46)
+
+        self.b_final = Button(self.frame_final, text="Save", command=self.window.quit)
+        self.b_final.config(bg=self.color_6, bd=0,fg=self.color_4)
+        self.b_final.place(x=200, y=200, width=46, height=46)
+
+        self.b_step = Button(self.frame_step, text="resolver", command=self.resolver)
+        self.b_step.config(bg=self.color_6,bd=0,fg=self.color_4)
+        self.b_step.place(x=180, y=210, width=68, height=38)
+
+        self.b_crear = Button(self.frame_main, text="Crear", command=self.crear)
+        self.b_crear.config(bg=self.color_6,bd=0,fg=self.color_4)
+        self.b_crear.place(x=800, y=2, width=98, height=46)
+
+        self.b_cargar = Button(self.frame_main, text="Cargar archivo", command=self.leer_archivo)
+        self.b_cargar.config(bg=self.color_6,bd=0,fg=self.color_4)
+        self.b_cargar.place(x=900, y=2, width=98, height=46)
+
+        self.l_init = Label(self.frame_init, text="  Estado inicial")
+        self.l_init.config(bg=self.color_6,fg=self.color_4,font=("Helvetica", 10),anchor=W,justify=LEFT)
+        self.l_init.place(x=-1, y=-1,width=250,height=25)
+
+        self.l_final = Label(self.frame_final, text="  Estado Final")
+        self.l_final.config(bg=self.color_6,fg=self.color_4,font=("Helvetica", 10),anchor=W,justify=LEFT)
+        self.l_final.place(x=-1, y=-1,width=250,height=25)
+
+        self.l_step = Label(self.frame_step, text="  Paso")
+        self.l_step.config(bg=self.color_6,fg=self.color_4,font=("Helvetica", 10),anchor=W,justify=LEFT)
+        self.l_step.place(x=-1, y=-1,width=250,height=25)
+
+        self.l_steps = Label(self.frame_steps, text="  Pasos")
+        self.l_steps.config(bg=self.color_6,fg=self.color_4,font=("Helvetica", 10),anchor=W,justify=LEFT)
+        self.l_steps.place(x=-1, y=-1,width=250,height=25)
+
+ 
         
     def crear(self):
-        #self.frame_step()
+        self.crear_area()
+
         conf=self.e_conf.get()
-        if conf=="vertical":
+        if conf=="h":            
             self.mat_ini=self.matriz_inicial_vertical()
+            self.mat_ini=self.matriz_trans(self.mat_ini)
             self.mat_estado_final=self.matriz_final_vertical()
+            self.mat_estado_final=self.matriz_trans(self.mat_estado_final)
         else:
             self.mat_ini=self.matriz_inicial_vertical()
-            self.mat_ini=self.matriz_trans(mat_ini)
             self.mat_estado_final=self.matriz_final_vertical()
-            self.mat_estado_final=self.matriz_trans(mat_estado_final)
+
         self.mostrar_piezas(self.frame_init,self.mat_ini,self.inicio.get("casilla"))
         self.mostrar_piezas(self.frame_final,self.mat_estado_final,self.fin.get("casilla"))
         
